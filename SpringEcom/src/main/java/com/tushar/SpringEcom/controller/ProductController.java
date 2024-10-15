@@ -53,4 +53,19 @@ public class ProductController {
         return new ResponseEntity<>(product.getImageData(),HttpStatus.OK);
 
     }
+    @PutMapping("/product/{id}")
+    public ResponseEntity<?>updateproduct(@RequestPart Product product, @RequestPart MultipartFile imageFile) throws IOException {
+
+        Product update = productservice.updateProduct(product,imageFile);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/product/{id}")
+      public ResponseEntity<?> delete(@PathVariable int id)
+
+    {
+      productservice.deletebyid(id);
+      return new ResponseEntity(HttpStatus.OK);
+    }
+
 }
