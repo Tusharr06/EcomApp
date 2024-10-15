@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const Navbar = ({ onSelectCategory, onSearch }) => {
+const Navbar = ({ onSelectCategory }) => {
   const getInitialTheme = () => {
     const storedTheme = localStorage.getItem("theme");
     return storedTheme ? storedTheme : "light-theme";
   };
 
-  const [selectedCategory, setSelectedCategory] = useState("");
   const [theme, setTheme] = useState(getInitialTheme());
   const [input, setInput] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -15,17 +14,8 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
   const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/products");
-      setSearchResults(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+    document.body.className = theme;
+  }, [theme]);
 
   const handleChange = async (value) => {
     setInput(value);
@@ -33,7 +23,7 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
       setShowSearchResults(true);
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/products/search?name=${value}`
+          `http://localhost:8080/api/products/search?keyword=${value}`
         );
         setSearchResults(response.data);
         setNoResults(response.data.length === 0);
@@ -48,7 +38,6 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
   };
 
   const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
     onSelectCategory(category);
   };
 
@@ -58,14 +47,10 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
     localStorage.setItem("theme", newTheme);
   };
 
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
-
   const categories = [
-    "Laptops",
-    "Headphones",
-    "Mobiles",
+    "Laptop",
+    "Headphone",
+    "Mobile",
     "Electronics",
     "Toys",
     "Fashion",
@@ -73,9 +58,9 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
 
   return (
     <header>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
+      <nav className="navbar navbar-expand-lg fixed-top">
         <div className="container-fluid">
-          <a className="navbar-brand fw-bold" href="https://turbocart.com/">
+          <a className="navbar-brand" href="/">
             TurboCart
           </a>
           <button
@@ -93,12 +78,12 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <a className="nav-link active" aria-current="page" href="/">
-                  <i className="bi bi-house me-1"></i> Home
+                  Home
                 </a>
               </li>
               <li className="nav-item">
                 <a className="nav-link" href="/add_product">
-                  <i className="bi bi-plus-circle me-1"></i> Add Product
+                  Add Product
                 </a>
               </li>
               <li className="nav-item dropdown">
@@ -109,7 +94,7 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  <i className="bi bi-list me-1"></i> Categories
+                  Categories
                 </a>
                 <ul className="dropdown-menu">
                   {categories.map((category) => (
@@ -125,16 +110,16 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
                 </ul>
               </li>
             </ul>
-            <button className="btn btn-outline-secondary me-2" onClick={toggleTheme}>
+            <button className="theme-btn" onClick={toggleTheme}>
               {theme === "dark-theme" ? (
-                <i className="bi bi-sun-fill"></i>
-              ) : (
                 <i className="bi bi-moon-fill"></i>
+              ) : (
+                <i className="bi bi-sun-fill"></i>
               )}
             </button>
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center cart">
               <a href="/cart" className="nav-link text-dark">
-                <i className="bi bi-cart me-2"></i> Cart
+                <i className="bi bi-cart me-2"> Cart</i>
               </a>
               <input
                 className="form-control me-2"
@@ -145,22 +130,18 @@ const Navbar = ({ onSelectCategory, onSearch }) => {
                 onChange={(e) => handleChange(e.target.value)}
               />
               {showSearchResults && (
-                <ul className="list-group position-absolute w-100">
+                <ul className="list-group">
                   {searchResults.length > 0 ? (
                     searchResults.map((result) => (
                       <li key={result.id} className="list-group-item">
                         <a href={`/product/${result.id}`} className="search-result-link">
-                          {result.name}
+                          <span>{result.name}</span>
                         </a>
                       </li>
                     ))
                   ) : (
                     noResults && (
-                      <li className="list-group-item">
-                        <p className="no-results-message mb-0">
-                          No Product found with that name
-                        </p>
-                      </li>
+                      <p className="no-results-message">No Product found</p>
                     )
                   )}
                 </ul>

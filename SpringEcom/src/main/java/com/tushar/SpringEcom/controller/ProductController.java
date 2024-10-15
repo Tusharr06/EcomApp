@@ -17,55 +17,77 @@ import java.util.List;
 public class ProductController {
 
     @Autowired
-    private ProductService productservice;
+    private ProductService productService;
 
     @GetMapping("/products")
-    public List<Product> getProducts()
-    {
-       return productservice.getAllProducts();
-
+    public ResponseEntity<List<Product>> getProducts() {
+        try {
+            List<Product> products = productService.getAllProducts();
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/product/{id}")
-    public ResponseEntity<Product> getProductsbyid(@PathVariable int id)
-    {
-        Product product = productservice.getProductByid(id);
-        if(product != null)
-        {
-            return new ResponseEntity<>(product, HttpStatus.OK);
+    public ResponseEntity<Product> getProductById(@PathVariable int id) {
+        try {
+            Product product = productService.getProductByid(id);
+            if (product != null) {
+                return new ResponseEntity<>(product, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
     }
-    @PostMapping("/product")
-    public ResponseEntity<?> addProduct(@RequestPart Product product, @RequestPart MultipartFile imageFile) throws IOException {
 
-        Product save = productservice.addProduct(product,imageFile);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PostMapping("/product")
+    public ResponseEntity<?> addProduct(@RequestPart Product product, @RequestPart MultipartFile imageFile) {
+        try {
+            Product savedProduct = productService.addProduct(product, imageFile);
+            return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/product/{id}/image")
-            public ResponseEntity<byte[]> image(@PathVariable int id)
-    {
-        Product product = productservice.getProductByid(id);
-        return new ResponseEntity<>(product.getImageData(),HttpStatus.OK);
-
+    public ResponseEntity<byte[]> getImage(@PathVariable int id) {
+        try {
+            Product product = productService.getProductByid(id);
+            if (product != null && product.getImageData() != null) {
+                return new ResponseEntity<>(product.getImageData(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    @PutMapping("/product/{id}")
-    public ResponseEntity<?>updateproduct(@RequestPart Product product, @RequestPart MultipartFile imageFile) throws IOException {
 
-        Product update = productservice.updateProduct(product,imageFile);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    @PutMapping("/product/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable int id, @RequestPart Product product, @RequestPart MultipartFile imageFile) {
+        try {
+            Product updatedProduct = productService.updateProduct(product,imageFile);
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/product/{id}")
-      public ResponseEntity<?> delete(@PathVariable int id)
-
-    {
-      productservice.deletebyid(id);
-      return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<?> delete(@PathVariable int id) {
+        try {
+            productService.deletebyid(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
 }

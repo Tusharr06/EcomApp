@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AppContext from "../Context/Context";
+import unplugged from "../assets/unplugged.png";
 
 const Home = ({ selectedCategory }) => {
   const { data, isError, addToCart, refreshData } = useContext(AppContext);
@@ -28,11 +29,7 @@ const Home = ({ selectedCategory }) => {
               const imageUrl = URL.createObjectURL(response.data);
               return { ...product, imageUrl };
             } catch (error) {
-              console.error(
-                "Error fetching image for product ID:",
-                product.id,
-                error
-              );
+              console.error("Error fetching image for product ID:", product.id, error);
               return { ...product, imageUrl: "placeholder-image-url" };
             }
           })
@@ -50,118 +47,101 @@ const Home = ({ selectedCategory }) => {
 
   if (isError) {
     return (
-      <h2 className="text-center" style={{ padding: "10rem" }}>
-        Something went wrong...
+      <h2 className="text-center" style={{ padding: "18rem" }}>
+        <img src={unplugged} alt="Error" style={{ width: '100px', height: '100px' }} />
       </h2>
     );
   }
+
   return (
-    <>
-      <div className="grid">
+    <div style={{ marginTop: "64px", padding: "20px" }}>
+      <div
+        className="grid"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "20px",
+        }}
+      >
         {filteredProducts.length === 0 ? (
-          <h2
-            className="text-center"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            No Products Available
-          </h2>
+          <h2 className="text-center">No Products Available</h2>
         ) : (
           filteredProducts.map((product) => {
-            const { id, brand, name, price, productAvailable, imageUrl } =
-              product;
-            const cardStyle = {
-              width: "18rem",
-              height: "12rem",
-              boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 3px",
-              backgroundColor: productAvailable ? "#fff" : "#ccc",
-            };
+            const { id, brand, name, price, productAvailable, imageUrl } = product;
+
             return (
               <div
                 className="card mb-3"
                 style={{
-                  width: "18rem",
-                  height: "24rem",
-                  boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 3px",
-                  backgroundColor: productAvailable ? "#fff" : "#ccc",
-                  margin: "10px",
-                  display: "flex",
-                  flexDirection: "column",
+                  width: "250px",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  transition: "transform 0.2s",
                 }}
                 key={id}
               >
-                <Link
-                  to={`/product/${id}`}
-                  style={{ textDecoration: "none", color: "inherit" }}
-                >
+                <Link to={`/product/${id}`} style={{ textDecoration: "none", color: "inherit" }}>
                   <img
                     src={imageUrl}
                     alt={name}
                     style={{
                       width: "100%",
-                      height: "180px",
+                      height: "150px",
                       objectFit: "cover",
-                      padding: "5px",
-                      margin: "0",
                     }}
                   />
                   <div
-                    className="buttons"
-                    style={{
-                      position: "absolute",
-                      top: "25px",
-                      left: "220px",
-                      zIndex: "1",
-                      
-                    }}
-                  >
-                    <div className="buttons-liked">
-                      <i className="bi bi-heart"></i>
-                    </div>
-                  </div>
-                  <div
                     className="card-body"
                     style={{
-                      flexGrow: 1,
+                      padding: "15px",
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
-                      padding: "10px",
                     }}
                   >
                     <div>
-                      <h5
-                        className="card-title"
-                        style={{ margin: "0 0 10px 0" }}
-                      >
+                      <h5 className="card-title" style={{ margin: "0 0 10px 0", fontSize: "1.25rem" }}>
                         {name.toUpperCase()}
                       </h5>
-                      <i className="card-brand" style={{ fontStyle: "italic" }}>
+                      <p className="card-brand" style={{ fontStyle: "italic", fontSize: "0.9rem" }}>
                         {"~ " + brand}
-                      </i>
+                      </p>
                     </div>
-                    <div>
-                      <h5
-                        className="card-text"
-                        style={{ fontWeight: "600", margin: "5px 0" }}
-                      >
-                        {"$" + price}
+                    <hr style={{ margin: "10px 0" }} />
+                    <div className="home-cart-price">
+                      <h5 className="card-text" style={{ fontWeight: "600", fontSize: "1.1rem", marginBottom: '5px' }}>
+                        <i className="bi bi-currency-rupee"></i>
+                        {price}
                       </h5>
+                    </div>
+                    {productAvailable ? (
                       <button
                         className="btn btn-primary"
-                        style={{ width: "100%" }}
+                        style={{ marginTop: '10px' }}
                         onClick={(e) => {
                           e.preventDefault();
                           addToCart(product);
                         }}
-                        disabled={!productAvailable}
                       >
-                        {productAvailable ? "Add to Cart" : "Out of Stock"}
+                        Add to Cart
                       </button>
-                    </div>
+                    ) : (
+                      <span
+                        style={{
+                          display: "inline-block",
+                          marginTop: '10px',
+                          padding: '8px 12px',
+                          backgroundColor: '#f0f0f0',
+                          color: '#999',
+                          borderRadius: '5px',
+                          textAlign: 'center',
+                          width: '100%',
+                        }}
+                      >
+                        Out of Stock
+                      </span>
+                    )}
                   </div>
                 </Link>
               </div>
@@ -169,7 +149,7 @@ const Home = ({ selectedCategory }) => {
           })
         )}
       </div>
-    </>
+    </div>
   );
 };
 
