@@ -77,7 +77,7 @@ const Product = () => {
               {product.category}
             </span>
             <p className="release-date" style={{ marginBottom: "2rem" }}>
-              <h6>Listed : <span><i>{new Date(product.releaseDate).toLocaleDateString()}</i></span></h6>
+              
             </p>
           </div>
           <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem", textTransform: 'capitalize', letterSpacing: '1px' }}>
@@ -89,7 +89,7 @@ const Product = () => {
         </div>
         <div className="product-price">
           <span style={{ fontSize: "2rem", fontWeight: "bold" }}>
-            {"$" + product.price}
+            {"₹" + product.price} {/* Display price directly in rupees */}
           </span>
           <button
             className={`cart-btn ${!isAvailable ? "disabled-btn" : ""}`}

@@ -112,10 +112,10 @@ const Home = ({ selectedCategory }) => {
                     <div className="home-cart-price">
                       <h5 className="card-text" style={{ fontWeight: "600", fontSize: "1.1rem", marginBottom: '5px' }}>
                         <i className="bi bi-currency-rupee"></i>
-                        {price}
+                        {price} {/* Display price directly in rupees */}
                       </h5>
                     </div>
-                    {productAvailable ? (
+                    {productAvailable && (
                       <button
                         className="btn btn-primary"
                         style={{ marginTop: '10px' }}
@@ -126,21 +126,6 @@ const Home = ({ selectedCategory }) => {
                       >
                         Add to Cart
                       </button>
-                    ) : (
-                      <span
-                        style={{
-                          display: "inline-block",
-                          marginTop: '10px',
-                          padding: '8px 12px',
-                          backgroundColor: '#f0f0f0',
-                          color: '#999',
-                          borderRadius: '5px',
-                          textAlign: 'center',
-                          width: '100%',
-                        }}
-                      >
-                        Out of Stock
-                      </span>
                     )}
                   </div>
                 </Link>
